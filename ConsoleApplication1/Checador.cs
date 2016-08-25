@@ -64,12 +64,6 @@ namespace ConsoleApplication1
 
         }
 
-        /*public Checador(System.Windows.Forms.Form f, string direccion, int puerto)
-        {
-            iListaChecks = new List<Check>();           
-            bIsConnected = axCZKEM1.Connect_Net(direccion, puerto);
-        }*/
-
 
         public void Conectar()
         {

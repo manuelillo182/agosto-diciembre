@@ -68,7 +68,7 @@ namespace ConsoleApplication1
                         }
 
                         //Console.WriteLine("entra try");
-                        foreach (var substring in substrings)                            
+                        /*foreach (var substring in substrings)                            
                         {
                             Console.WriteLine("Envia"+substring);
                             //Console.WriteLine(x);
@@ -82,7 +82,9 @@ namespace ConsoleApplication1
                                 goto INICIO;
                             }
                             Thread.Sleep(1000);
-                        }
+                        }*/
+
+                        checa(substrings, streamWriter);
                         try
                         {
                             streamWriter.WriteLine("s");
@@ -110,28 +112,41 @@ namespace ConsoleApplication1
             }
         }
 
-        public void checa()
+        public static void checa(string[] direcciones, StreamWriter streamWriter)
         {
-           
+            //streamWriter.WriteLine("entra checa");
             checador.Aparato = 1;
             //string[] direcc = { "10.12.4.10", "10.7.6.199", "10.12.102.20", "10.4.4.10", "10.7.4.10", "10.2.6.10", "10.4.6.6","10.4.7.27","10.2.6.11","10.6.6.253",
             //         "10.14.4.10", "10.12.16.15", "10.12.4.11"};
-            string[] direcc = { "10.12.4.10", "10.7.6.199" };
+            //string[] direcc = { "10.12.4.10", "10.7.6.199" };
             checador.Puerto = 4370;
 
-            for (int i = 0; i <= direcc.Length - 1; i++)
-
+            //for (int i = 0; i <= direcc.Length - 1; i++)
+            //for (int i = 0; i <= direcciones.Length - 1; i++)
+            foreach (var ip in direcciones)
             {
-                checador.cDireccion = direcc[i];
+                
+                checador.cDireccion = ip;
                 //realiza ping para obtener estado de dispositivo
                 Ping HacerPing = new Ping();
-                PingReply RespuestaPing;
-                RespuestaPing = HacerPing.Send(checador.cDireccion);
+                PingReply RespuestaPing = null; 
+                try
+                {
+                    RespuestaPing = HacerPing.Send(checador.cDireccion);
+                }
+                catch (Exception e)
+                {
+                    //Console.WriteLine("error:" + e.ToString());
+                    streamWriter.WriteLine("error desconocido en ping:" + ip);
+                    continue;
+                }
+                
                 //
                 if (RespuestaPing.Status == IPStatus.Success)
                 {
                     try
                     {
+                        streamWriter.WriteLine("Analizando:" + ip);
                         checador.Conectar();
                         Console.WriteLine("\n" + "ip:" + checador.cDireccion + "-puerto:" + checador.Puerto);
                         if (checador.Conectado)
@@ -141,7 +156,8 @@ namespace ConsoleApplication1
                         }
                         else
                         {
-                            MessageBox.Show("Error al conectar al checador, error=44", "Error");
+                            //MessageBox.Show("Error al conectar al checador, error=44", "Error");
+                            streamWriter.WriteLine("Error al conectar al checador, error=44", "Error");
                         }
                     }
 
@@ -149,12 +165,14 @@ namespace ConsoleApplication1
                     catch (Exception ex)
 #pragma warning restore CS0168 // La variable está declarada pero nunca se usa
                     {
-                        MessageBox.Show("Error al conectar al checador, error=" + checador.Error().ToString(), "Error");
+                        //MessageBox.Show("Error al conectar al checador, error=" + checador.Error().ToString(), "Error");
+                        streamWriter.WriteLine("Error al conectar al checador, error=" + checador.Error().ToString(), "Error");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("\n El dispositivo " + checador.cDireccion + " No esta conectado");
+                    //Console.WriteLine("\n El dispositivo " + checador.cDireccion + " No esta conectado");
+                    streamWriter.WriteLine("El dispositivo " + checador.cDireccion + " No esta conectado");
                 }
             }
         }
